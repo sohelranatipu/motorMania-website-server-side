@@ -1,5 +1,5 @@
 const express = require('express')
-const { MongoClient } = require('mongodb');
+const { MongoClient, ListCollectionsCursor } = require('mongodb');
 const app = express()
 const cors = require('cors');
 require('dotenv').config();
@@ -19,8 +19,26 @@ async function run(){
 
         const database = client.db("finalAssignment");
         const orderCollection = database.collection("orderCollection"); 
+        const productCollection = database.collection("productCollection"); 
+        const reviewCollection = database.collection("reviewCollection"); 
 
-            // GET API 
+
+        // POST ADD PRODUCT 
+        app.post('/addProduct',async(req,res)=>{
+            const product = req.body;
+            // console.log('hit the post api',product);
+            const result = await productCollection.insertOne(product)
+            res.send(result);
+        })
+
+        // GET Product APi 
+        app.get('/addProduct',async(req,res)=>{
+            const cursor = productCollection.find({});
+            const products = await cursor.toArray();
+            res.send(products)
+        })
+
+            // GET API Order
         app.get('/placeOrder', async(req,res)=>{
             const email = req.query.email ;
             const query = {email: email};
@@ -38,6 +56,24 @@ async function run(){
             console.log('added user',result); 
             res.json(result);
         })
+
+        // POST API REVIEW 
+        app.post('/review',async(req,res)=>{
+            const review = req.body;
+            console.log('hit the post api',review);
+            const result = await reviewCollection.insertOne(review)
+            res.send(result);
+        })
+
+        // GET API REVIEW 
+        app.get('/review',async(req,res)=>{
+            const cursor = reviewCollection.find({});
+            const reviews = await cursor.toArray();
+            res.send(reviews)
+        })
+
+
+
     }
     finally{
         // await client.close();
